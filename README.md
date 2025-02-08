@@ -3,9 +3,15 @@
 Lightweight Go package that helps loading the environment variables from an `.env` file that can be saved anywhere in
 the project's structure.
 
-## Usage
+## Install
 
-How to use the package.
+```shell
+go get github.com/raiesbo/goenv@latest
+```
+
+## Examples
+
+As easy as:
 
 ```go
 package main
