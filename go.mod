@@ -1,3 +1,4 @@
 module goenv
 
-go 1.23.1
+// Supports the four most recent versions of Go.
+go 1.20
