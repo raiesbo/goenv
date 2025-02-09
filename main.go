@@ -1,7 +1,6 @@
 package goenv
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -68,5 +67,5 @@ func Load() error {
 		dirsQueue = dirsQueue[1:]
 	}
 
-	return errors.New("no file with .env name has been found in the project")
+	return nil
 }
