@@ -16,7 +16,7 @@ func appendPaths(dirsQueue *[]string, newDirs []os.DirEntry, basePath string) {
 	}
 }
 
-// loadVarsFromFile receives a path to an .env file, parses it and loads all env variables.
+// loadVarsFromFile receives a path to an .env file, parses it and loads all the variables.
 func loadVarsFromFile(path string) error {
 	fileData, err := os.ReadFile(path)
 	if err != nil {
