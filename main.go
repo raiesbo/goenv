@@ -1,8 +1,9 @@
 package goenv
 
 import (
-	"fmt"
+	"errors"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -10,8 +11,8 @@ import (
 // directories queue.
 func appendPaths(dirsQueue *[]string, newDirs []os.DirEntry, basePath string) {
 	for _, dir := range newDirs {
-		filePath := fmt.Sprintf("%s/%s", basePath, dir.Name())
-		*dirsQueue = append(*dirsQueue, filePath)
+		path := filepath.Join(basePath, dir.Name())
+		*dirsQueue = append(*dirsQueue, path)
 	}
 }
 
@@ -19,14 +20,13 @@ func appendPaths(dirsQueue *[]string, newDirs []os.DirEntry, basePath string) {
 func loadVarsFromFile(path string) error {
 	fileData, err := os.ReadFile(path)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	for _, line := range strings.Split(string(fileData), "\n") {
 		lineContent := strings.Split(line, "=")
 		if len(lineContent) == 2 {
-			err := os.Setenv(lineContent[0], lineContent[1])
-			if err != nil {
+			if err := os.Setenv(lineContent[0], lineContent[1]); err != nil {
 				return err
 			}
 		}
@@ -68,5 +68,5 @@ func Load() error {
 		dirsQueue = dirsQueue[1:]
 	}
 
-	return nil
+	return errors.New("no file with .env name has been found in the project")
 }
