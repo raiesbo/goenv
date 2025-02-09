@@ -1,14 +1,14 @@
-# Go Env
+# Go env
 
-Lightweight Go package that helps loading the environment variables from an `.env` file that can be saved anywhere in
+Lightweight Go package that helps loading the environment variables from an `.env` file that can be stored anywhere in
 the project's structure.
 
-This package does not contain any additional dependency.
+This package does not contain any additional dependencies.
 
 ## Install
 
 ```shell
-go get github.com/raiesbo/goenv@latest
+go get github.com/raiesbo/goenv
 ```
 
 ## Examples
@@ -23,12 +23,16 @@ import (
 )
 
 func main() {
-	if err := goenv.Load(); err != nil {
-		panic(err)
+    if err := goenv.Load(); err != nil {
+        panic(err)
     }
-
-	// After loading, the environment variables are ready to be used.
-	// Example: addr := os.Getenv("ADDR")
+    
+    // After loading, the environment variables are ready to be used. 
+    // Example: addr := os.Getenv("ADDR")
 }
 ```
 
+## License
+Copyright (c) 2025 [Raimon Espasa Bou](https://github.com/raiesbo) 
+
+Licensed under [MIT License](./LICENSE)
