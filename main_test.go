@@ -1,7 +1,6 @@
 package goenv
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -27,7 +26,8 @@ func Test_Load(t *testing.T) {
 	}
 
 	envFilePath := filepath.Join(targetFolder, ".env")
-	envContent := "TEST_KEY=TEST_VALUE"
+	envContent := "TEST_KEY=TEST_VALUE\nTEST_KEY_2=TEST_VALUE_2"
+
 	if err := os.WriteFile(envFilePath, []byte(envContent), 0644); err != nil {
 		t.Fatalf("Failed to create .env file: %v", err)
 	}
@@ -37,7 +37,10 @@ func Test_Load(t *testing.T) {
 	}
 
 	if val := os.Getenv("TEST_KEY"); val != "TEST_VALUE" {
-		fmt.Println("value", val)
+		t.Fatalf("Failed to load env variables: %v", err)
+	}
+
+	if val := os.Getenv("TEST_KEY_2"); val != "TEST_VALUE_2" {
 		t.Fatalf("Failed to load env variables: %v", err)
 	}
 }

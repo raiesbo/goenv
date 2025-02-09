@@ -6,13 +6,17 @@ import (
 	"strings"
 )
 
-// appendPaths receives an array of directory entries and appends their name with full path to a predefined
-// directories queue.
-func appendPaths(dirsQueue *[]string, newDirs []os.DirEntry, basePath string) {
+// getPaths receives an array of directory entries and transforms it into a array of file paths concatenating the
+// directory name with a base path.
+func getPaths(newDirs []os.DirEntry, basePath string) []string {
+	var paths []string
+
 	for _, dir := range newDirs {
 		path := filepath.Join(basePath, dir.Name())
-		*dirsQueue = append(*dirsQueue, path)
+		paths = append(paths, path)
 	}
+
+	return paths
 }
 
 // loadVarsFromFile receives a path to an .env file, parses it and loads all the variables.
@@ -44,7 +48,7 @@ func Load() error {
 		return err
 	}
 
-	appendPaths(&dirsQueue, dirs, ".")
+	dirsQueue = getPaths(dirs, ".")
 
 	for len(dirsQueue) > 0 {
 		path := dirsQueue[0]
@@ -59,7 +63,7 @@ func Load() error {
 			if err != nil {
 				return err
 			}
-			appendPaths(&dirsQueue, children, path)
+			dirsQueue = append(dirsQueue, getPaths(children, path)...)
 		} else if file.Name() == ".env" {
 			return loadVarsFromFile(path)
 		}
