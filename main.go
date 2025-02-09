@@ -6,20 +6,23 @@ import (
 	"strings"
 )
 
-// getPaths receives an array of directory entries and transforms it into a array of file paths concatenating the
-// directory name with a base path.
-func getPaths(newDirs []os.DirEntry, basePath string) []string {
-	var paths []string
+const (
+	EnvFile = ".env"
+)
 
-	for _, dir := range newDirs {
-		path := filepath.Join(basePath, dir.Name())
-		paths = append(paths, path)
+// getPaths converts an array of directory entries into an array of file paths by concatenating each
+// entry's name with a base path.
+func getPaths(newDirs []os.DirEntry, basePath string) []string {
+	paths := make([]string, len(newDirs))
+
+	for i, dir := range newDirs {
+		paths[i] = filepath.Join(basePath, dir.Name())
 	}
 
 	return paths
 }
 
-// loadVarsFromFile receives a path to an .env file, parses it and loads all the variables.
+// loadVarsFromFile parses an .env file at the given path and loads its variables into the environment.
 func loadVarsFromFile(path string) error {
 	fileData, err := os.ReadFile(path)
 	if err != nil {
@@ -27,9 +30,14 @@ func loadVarsFromFile(path string) error {
 	}
 
 	for _, line := range strings.Split(string(fileData), "\n") {
-		lineContent := strings.Split(line, "=")
-		if len(lineContent) == 2 {
-			if err := os.Setenv(lineContent[0], lineContent[1]); err != nil {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.Split(line, "=")
+		if len(parts) == 2 {
+			key, value := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+			if err := os.Setenv(key, value); err != nil {
 				return err
 			}
 		}
@@ -38,17 +46,10 @@ func loadVarsFromFile(path string) error {
 	return nil
 }
 
-// Load reads recursively all the directories of a project until it finds a .env file. Once the .env is found, reads
-// the file and loads the values as OS ENV values.
+// Load recursively scans all directories of a project until it finds a .env file. Once found, it reads
+// the file and loads its values as environment variables.
 func Load() error {
-	var dirsQueue []string
-
-	dirs, err := os.ReadDir("./")
-	if err != nil {
-		return err
-	}
-
-	dirsQueue = getPaths(dirs, ".")
+	dirsQueue := []string{"./"}
 
 	for len(dirsQueue) > 0 {
 		path := dirsQueue[0]
@@ -64,7 +65,7 @@ func Load() error {
 				return err
 			}
 			dirsQueue = append(dirsQueue, getPaths(children, path)...)
-		} else if file.Name() == ".env" {
+		} else if file.Name() == EnvFile {
 			return loadVarsFromFile(path)
 		}
 
