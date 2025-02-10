@@ -44,3 +44,46 @@ func Test_Load(t *testing.T) {
 		t.Fatalf("Failed to load env variables: %v", err)
 	}
 }
+
+// Test_GetString verifies that GetString correctly retrieves environment variables and falls back when necessary.
+func Test_GetString(t *testing.T) {
+	key := "TEST_STRING"
+	value := "hello"
+	fallback := "default"
+
+	os.Setenv(key, value)
+	defer os.Unsetenv(key)
+
+	if got := GetString(key, fallback); got != value {
+		t.Errorf("GetString(%q, %q) = %q; want %q", key, fallback, got, value)
+	}
+
+	os.Unsetenv(key)
+	if got := GetString(key, fallback); got != fallback {
+		t.Errorf("GetString(%q, %q) = %q; want %q", key, fallback, got, fallback)
+	}
+}
+
+// Test_GetInt verifies that GetInt correctly retrieves integer environment variables and falls back when necessary.
+func Test_GetInt(t *testing.T) {
+	key := "TEST_INT"
+	value := "42"
+	fallback := 10
+
+	os.Setenv(key, value)
+	defer os.Unsetenv(key)
+
+	if got := GetInt(key, fallback); got != 42 {
+		t.Errorf("GetInt(%q, %d) = %d; want %d", key, fallback, got, 42)
+	}
+
+	os.Setenv(key, "invalid")
+	if got := GetInt(key, fallback); got != fallback {
+		t.Errorf("GetInt(%q, %d) with invalid value = %d; want %d", key, fallback, got, fallback)
+	}
+
+	os.Unsetenv(key)
+	if got := GetInt(key, fallback); got != fallback {
+		t.Errorf("GetInt(%q, %d) = %d; want %d", key, fallback, got, fallback)
+	}
+}

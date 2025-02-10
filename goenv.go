@@ -3,6 +3,7 @@ package goenv
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -73,4 +74,29 @@ func Load() error {
 	}
 
 	return nil
+}
+
+// GetString returns the value of an environment variable if it exists; otherwise, it returns the fallback value.
+func GetString(key, fallback string) string {
+	val, ok := os.LookupEnv(key)
+	if !ok {
+		return fallback
+	}
+
+	return val
+}
+
+// GetInt returns the integer value of an environment variable if it exists; otherwise, it returns the fallback value.
+func GetInt(key string, fallback int) int {
+	val, ok := os.LookupEnv(key)
+	if !ok {
+		return fallback
+	}
+
+	intVal, err := strconv.Atoi(val)
+	if err != nil {
+		return fallback
+	}
+
+	return intVal
 }
